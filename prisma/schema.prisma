@@ -1,0 +1,239 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  passwordHash String
+  name         String
+  role         String        @default("CITIZEN") // CITIZEN, RESPONDER, ADMIN
+  phone        String?
+  assignedSOS  SOSRequest[]  @relation("AssignedResponder")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  AuditLog     AuditLog[]
+}
+
+model FamilyGroup {
+  id        String         @id @default(cuid())
+  name      String
+  createdById String?
+  members   FamilyMember[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model FamilyMember {
+  id                 String       @id @default(cuid())
+  familyGroupId      String
+  familyGroup        FamilyGroup  @relation(fields: [familyGroupId], references: [id], onDelete: Cascade)
+  name               String
+  role               String       // FATHER, MOTHER, CHILD, GRANDPARENT, OTHER
+  status             String       @default("SAFE") // SAFE, MOVING, NEED_HELP, UNKNOWN
+  locationLat        Float?
+  locationLng        Float?
+  locationName       String?
+  lastStatusUpdate   DateTime     @default(now())
+  notes              String?
+}
+
+model RiskZone {
+  id              String   @id @default(cuid())
+  name            String
+  district        String
+  state           String   @default("Bihar")
+  riskLevel       String   // LOW, MODERATE, HIGH, EXTREME
+  riskScore       Int      // 0-100
+  population      Int
+  centerLat       Float
+  centerLng       Float
+  boundaryGeoJson String?  // JSON polygon array
+  rainfallMm      Float    @default(0)
+  waterLevelM     Float    @default(0)
+  primaryRiver    String?
+  isDemo          Boolean  @default(true)
+  lastUpdated     DateTime @default(now())
+}
+
+model SensorStation {
+  id                 String          @id @default(cuid())
+  name               String
+  riverName          String
+  district           String
+  latitude           Float
+  longitude          Float
+  warningThresholdM  Float
+  dangerThresholdM   Float
+  currentWaterLevelM Float
+  currentRainfallMm  Float
+  status             String          @default("NORMAL") // NORMAL, WARNING, DANGER
+  isDemo             Boolean         @default(true)
+  lastUpdated        DateTime        @default(now())
+  readings           SensorReading[]
+}
+
+model SensorReading {
+  id              String        @id @default(cuid())
+  stationId       String
+  station         SensorStation @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  timestamp       DateTime      @default(now())
+  waterLevelM     Float
+  rainfallMm      Float
+  dischargeCusecs Float?
+}
+
+model PublicAlert {
+  id                String   @id @default(cuid())
+  title             String
+  message           String
+  severity          String   // LOW, MODERATE, HIGH, EXTREME
+  area              String
+  reason            String
+  recommendedAction String
+  validFrom         DateTime @default(now())
+  validTo           DateTime
+  issuingAuthority  String   @default("State Disaster Management Authority")
+  isPublished       Boolean  @default(true)
+  isDemo            Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Shelter {
+  id               String   @id @default(cuid())
+  name             String
+  address          String
+  latitude         Float
+  longitude        Float
+  totalCapacity    Int
+  occupiedCapacity Int
+  availableBeds    Int
+  hasFood          Boolean  @default(true)
+  hasDrinkingWater Boolean  @default(true)
+  hasMedical       Boolean  @default(false)
+  hasToilets       Boolean  @default(true)
+  hasElectricity   Boolean  @default(true)
+  isAccessible     Boolean  @default(false)
+  contactPhone     String?
+  operationalStatus String  @default("OPEN") // OPEN, FULL, CLOSING, CLOSED
+  isDemo           Boolean  @default(true)
+  lastUpdated      DateTime @default(now())
+}
+
+model Hospital {
+  id                  String   @id @default(cuid())
+  name                String
+  address             String
+  latitude            Float
+  longitude           Float
+  emergencyBeds       Int
+  availableBeds       Int
+  traumaCareAvailable Boolean  @default(false)
+  contactPhone        String?
+  isDemo              Boolean  @default(true)
+  lastUpdated         DateTime @default(now())
+}
+
+model ReliefCenter {
+  id            String              @id @default(cuid())
+  name          String
+  address       String
+  latitude      Float
+  longitude     Float
+  centerType    String              @default("DISTRIBUTION") // DISTRIBUTION, WAREHOUSE, MOBILE_UNIT
+  contactPerson String?
+  contactPhone  String?
+  shelterId     String?
+  isDemo        Boolean             @default(true)
+  lastUpdated   DateTime            @default(now())
+  inventories   ResourceInventory[]
+}
+
+model ResourceInventory {
+  id                    String       @id @default(cuid())
+  centerId              String
+  reliefCenter          ReliefCenter @relation(fields: [centerId], references: [id], onDelete: Cascade)
+  resourceType          String       // FOOD, DRINKING_WATER, MEDICINES, CHARGING_POWER, TOILETS_SANITATION, BEDDING, RESCUE_EQUIPMENT
+  quantity              Float
+  unit                  String       // packets, liters, kits, units
+  dailyConsumptionRate  Float        @default(10)
+  lastRestocked         DateTime     @default(now())
+  lastUpdated           DateTime     @default(now())
+}
+
+model RoadCondition {
+  id                 String   @id @default(cuid())
+  roadName           String
+  segmentDescription String
+  coordinatesGeoJson String?  // JSON lat,lng points array
+  status             String   // CLEAR, CAUTION_WATERLOGGED, BLOCKED_FLOODED, DAMAGED
+  waterDepthCm       Int      @default(0)
+  reportedAt         DateTime @default(now())
+  verified           Boolean  @default(true)
+  isDemo             Boolean  @default(true)
+  lastUpdated        DateTime @default(now())
+}
+
+model SOSRequest {
+  id             String             @id @default(cuid())
+  requestNumber  String             @unique // e.g. SOS-2045
+  emergencyType  String             // MEDICAL, TRAPPED_FLOODWATER, FOOD_WATER_NEEDED, EVACUATION, ELDERLY_ASSISTANCE, CHILD_ASSISTANCE, OTHER
+  description    String
+  latitude       Float
+  longitude      Float
+  address        String
+  peopleCount    Int                @default(1)
+  hasVulnerable  Boolean            @default(false)
+  contactName    String?
+  contactPhone   String?
+  priorityScore  Int                @default(50) // 0-100
+  priorityLevel  String             @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  priorityReason String?
+  status         String             @default("REPORTED") // REPORTED, ASSIGNED, EN_ROUTE, RESOLVED
+  responderId    String?
+  responder      User?              @relation("AssignedResponder", fields: [responderId], references: [id])
+  responderNotes String?
+  isDemo         Boolean            @default(true)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  resolvedAt     DateTime?
+  statusHistory  SOSStatusHistory[]
+}
+
+model SOSStatusHistory {
+  id           String     @id @default(cuid())
+  sosRequestId String
+  sosRequest   SOSRequest @relation(fields: [sosRequestId], references: [id], onDelete: Cascade)
+  status       String
+  note         String?
+  changedBy    String?
+  timestamp    DateTime   @default(now())
+}
+
+model ChecklistRecord {
+  id          String   @id @default(cuid())
+  userId      String?
+  itemKey     String
+  isCompleted Boolean  @default(false)
+  updatedAt   DateTime @default(now())
+
+  @@unique([userId, itemKey])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  entityType String
+  entityId   String
+  details    String?
+  timestamp  DateTime @default(now())
+}
+

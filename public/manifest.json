@@ -1,0 +1,24 @@
+{
+  "name": "AAPDASETU — Flood Alert, Prediction, Rescue and Disaster Management Platform",
+  "short_name": "AAPDASETU",
+  "description": "Warn Early. Navigate Safely. Survive Smarter.",
+  "start_url": "/offline",
+  "display": "standalone",
+  "background_color": "#070b14",
+  "theme_color": "#0c1322",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
+
