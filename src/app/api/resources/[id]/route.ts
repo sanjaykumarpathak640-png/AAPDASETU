@@ -2,6 +2,23 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getSessionUser } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
+export async function GET(req: Request, { params }: { params: { id: string } }) {
+  try {
+    const item = await prisma.resourceInventory.findUnique({
+      where: { id: params.id },
+      include: { reliefCenter: true },
+    });
+    if (!item) {
+      return NextResponse.json({ error: 'Inventory record not found' }, { status: 404 });
+    }
+    return NextResponse.json(item);
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
+
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   try {
     const user = await getSessionUser();
@@ -46,4 +63,3 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
-

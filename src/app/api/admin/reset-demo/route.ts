@@ -4,6 +4,8 @@ import util from 'util';
 import path from 'path';
 import { getSessionUser } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 const execPromise = util.promisify(exec);
 
 export async function POST() {

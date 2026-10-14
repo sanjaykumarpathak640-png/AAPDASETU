@@ -2,6 +2,22 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getSessionUser } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
+export async function GET(req: Request, { params }: { params: { id: string } }) {
+  try {
+    const alert = await prisma.publicAlert.findUnique({
+      where: { id: params.id },
+    });
+    if (!alert) {
+      return NextResponse.json({ error: 'Alert not found' }, { status: 404 });
+    }
+    return NextResponse.json(alert);
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
+
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   try {
     const user = await getSessionUser();
@@ -66,4 +82,3 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
-

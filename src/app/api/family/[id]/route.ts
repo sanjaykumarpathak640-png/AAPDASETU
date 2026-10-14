@@ -1,6 +1,22 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
+export async function GET(req: Request, { params }: { params: { id: string } }) {
+  try {
+    const member = await prisma.familyMember.findUnique({
+      where: { id: params.id },
+    });
+    if (!member) {
+      return NextResponse.json({ error: 'Family member not found' }, { status: 404 });
+    }
+    return NextResponse.json(member);
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
+
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   try {
     const body = await req.json();
@@ -37,4 +53,3 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
-
