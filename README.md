@@ -2,9 +2,19 @@
 
 > **Tagline:** “Warn Early. Navigate Safely. Survive Smarter.”
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-aapdasetu--chi.vercel.app-00dfa2?style=for-the-badge&logo=vercel)](https://aapdasetu-chi.vercel.app)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/sanjaykumarpathak640-png/AAPDASETU)
+[![Next.js 14](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma)](https://www.prisma.io/)
+
+**🌐 Production Live Deployment:** [https://aapdasetu-chi.vercel.app](https://aapdasetu-chi.vercel.app)  
+**📂 Source Code Repository:** [https://github.com/sanjaykumarpathak640-png/AAPDASETU](https://github.com/sanjaykumarpathak640-png/AAPDASETU)
+
 AAPDASETU is an integrated, full-stack disaster management and humanitarian logistics platform built with **Next.js 14**, **TypeScript**, **Tailwind CSS**, **Prisma + SQLite**, **Leaflet / OpenStreetMap**, **Recharts**, **Dexie IndexedDB (PWA Offline)**, and an **Always-Available AI Safety Assistant** with deterministic local fallback.
 
 It bridges the critical disconnect during catastrophic flood emergencies between **affected citizens** and **emergency response commanders (NDRF / SDRF / DDMA)**.
+
 
 ---
 
