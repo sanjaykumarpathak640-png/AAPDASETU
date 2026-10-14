@@ -1,11 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Allow SVGs or unoptimized images if needed
   images: {
     unoptimized: true,
+  },
+  experimental: {
+    outputFileTracingIncludes: {
+      '/api/**/*': ['./prisma/dev.db'],
+    },
   },
 };
 
 module.exports = nextConfig;
+
+
 
